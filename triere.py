@@ -3,6 +3,7 @@ import re
 import collections
 import functools
 
+# NB: This class was taken from Python documentation with minimum changes
 class memoized(object):
    '''Decorator. Caches a function's return value each time it is called.
    If called later with the same arguments, the cached value is returned
@@ -94,22 +95,26 @@ class Trieify_Regex():
                 seq += self.trace(t[key])
                 subseqs += [seq]
 
+        # no need to sort `subseqs` if only 1 item to return
+        if len(subseqs) == 1:
+            sequence = preseq + subseqs[0]
+            if '**' in t and sequence[-1] != '?': 
+                sequence += '?'
+            return sequence
+
         # first sort alphabetically
-        # then sort by length (ignoring group/set/or special chars)
+        # second sort by reverse length (ignoring group/set/or special chars)
         subseqs.sort()
-        # subseqs.sort(key=lambda x: len(x), reverse=True)
-        subseqs.sort(key=lambda x: len(re.findall('\(\?:|[\[\|\?\+]', x)))
+        subseqs.sort(key=lambda x: len(re.sub('\(\?:|[\[\|\?\+]', '', x)),
+                     reverse=True)
 
         are_single_chars = [len(i) == 1 for i in subseqs]
         if all(are_single_chars):
             joined = ''.join(subseqs)
-            if len(joined) == 1:
-                return preseq + joined[0] + '?' if '**' in t else joined[0]
+            if any([joined in s for s in self._ORDERED]):
+                return '{}[{}-{}]'.format(preseq, joined[0], joined[-1])
             else:
-                if any([joined in s for s in self._ORDERED]):
-                    return '{}[{}-{}]'.format(preseq, joined[0], joined[-1])
-                else:
-                    return '{}[{}]'.format(preseq, joined)
+                return '{}[{}]'.format(preseq, joined)
         else:
             if sum(are_single_chars) > 1:
                 ones = [s for s in subseqs if len(s) == 1]
@@ -117,7 +122,9 @@ class Trieify_Regex():
                 seq = '(?:{}|[{}])'.format('|'.join(multis), ''.join(ones))
             else:
                 seq = '(?:{})'.format('|'.join(subseqs))
-            seq = seq + '?' if "**" in t else seq
+            
+            if '**' in t and seq[-1] != '?':
+                seq += '?'
             return preseq + seq
 
 
