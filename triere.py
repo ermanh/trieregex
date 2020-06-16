@@ -48,8 +48,15 @@ class Trieify_Regex():
                 trie = trie[char]
             trie['**'] = True
 
-    def regex(self):
-        return r'\b' + self.trace(self._trie) + r'\b'
+    def regex(self, boundary=''):
+        if type(boundary) == str:
+            return '{}{}{}'.format(boundary, self.trace(self._trie), boundary)
+        elif type(boundary) == list:
+            if len(boundary) != 2 or any([type(b) != str for b in boundary]):
+                raise ValueError('list item passed in to arg `boundary` \
+                    must contain 2 strings')
+            return '{}{}{}'.format(
+                boundary[0], self.trace(self._trie), boundary[1])
 
     @memoized
     def trace(self, trie: dict, seq: str=''):
@@ -87,11 +94,14 @@ class Trieify_Regex():
                 seq += self.trace(t[key])
                 subseqs += [seq]
 
+        # first sort alphabetically
+        # then sort by length (ignoring group/set/or special chars)
         subseqs.sort()
-        subseqs.sort(key=lambda x: len(x), reverse=True)
+        # subseqs.sort(key=lambda x: len(x), reverse=True)
+        subseqs.sort(key=lambda x: len(re.findall('\(\?:|[\[\|\?\+]', x)))
 
-        single_chars_or_not = [len(i) == 1 for i in subseqs]
-        if all(single_chars_or_not):
+        are_single_chars = [len(i) == 1 for i in subseqs]
+        if all(are_single_chars):
             joined = ''.join(subseqs)
             if len(joined) == 1:
                 return preseq + joined[0] + '?' if '**' in t else joined[0]
@@ -101,7 +111,7 @@ class Trieify_Regex():
                 else:
                     return '{}[{}]'.format(preseq, joined)
         else:
-            if sum(single_chars_or_not) > 1:
+            if sum(are_single_chars) > 1:
                 ones = [s for s in subseqs if len(s) == 1]
                 multis = [s for s in subseqs if len(s) > 1]
                 seq = '(?:{}|[{}])'.format('|'.join(multis), ''.join(ones))
