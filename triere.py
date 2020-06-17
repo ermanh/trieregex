@@ -1,37 +1,8 @@
 import re
+from .memoize import memoize
 
-import collections
-import functools
 
-# NB: This class was taken from Python documentation with minimum changes
-class memoized(object):
-   '''Decorator. Caches a function's return value each time it is called.
-   If called later with the same arguments, the cached value is returned
-   (not reevaluated).
-   '''
-   def __init__(self, func):
-      self.func = func
-      self.cache = {}
-   def __call__(self, *args):
-      args2 = str(args)
-      if not isinstance(args, collections.Hashable):
-         # uncacheable. a list, for instance.
-         # better to not cache than blow up.
-         return self.func(*args)
-      if args2 in self.cache:
-         return self.cache[args2]
-      else:
-         value = self.func(*args)
-         self.cache[args2] = value
-         return value
-   def __repr__(self):
-      '''Return the function's docstring.'''
-      return self.func.__doc__
-   def __get__(self, obj, objtype):
-      '''Support instance methods.'''
-      return functools.partial(self.__call__, obj)
-
-class Trieify_Regex():
+class TrieRE():
 
     def __init__(self, *words: str):
         self._trie = {}
@@ -49,44 +20,34 @@ class Trieify_Regex():
                 trie = trie[char]
             trie['**'] = True
 
-    def regex(self, boundary=''):
-        if type(boundary) == str:
-            return '{}{}{}'.format(boundary, self.trace(self._trie), boundary)
-        elif type(boundary) == list:
-            if len(boundary) != 2 or any([type(b) != str for b in boundary]):
-                raise ValueError('list item passed in to arg `boundary` \
+    def regex(self, boundaries=''):
+        if type(boundaries) == str:
+            return '{}{}{}'.format(
+                boundaries, self.trace(self._trie), boundaries)
+        elif type(boundaries) == list:
+            if (len(boundaries) != 2 or any([type(b) != str for b in boundaries])):
+                raise ValueError('list item passed in to arg `boundaries` \
                     must contain 2 strings')
             return '{}{}{}'.format(
-                boundary[0], self.trace(self._trie), boundary[1])
+                boundaries[0], self.trace(self._trie), boundaries[1])
 
-    @memoized
-    def trace(self, trie: dict, seq: str=''):
-        if type(trie) == bool:
-            return ''
-        if len(trie) == 0:
-            return ''
+    @memoize
+    def trace(self, trie: dict):
         if len(trie) == 1:
-            seq += self._trace_single(trie, seq)
-        else:
-            seq += self._trace_multi(trie, seq)
-        return seq
+            return self._trace_single(trie)
+        return self._trace_multi(trie)
 
-    def _trace_single(self, trie: dict, seq: str):
-        t = trie
-        key = list(t.keys())[0]
+    def _trace_single(self, trie: dict):
+        key = list(trie.keys())[0]
 
         if key == '**':
-            return seq
-        else:
-            if len(t[key]) == 1:
-                t = t[key]
-                seq += re.escape(key)
-                return self._trace_single(t, seq)
-            else:
-                return self._trace_multi(t, seq)
+            return ''
 
-    def _trace_multi(self, trie: dict, preseq: str):
+        return re.escape(key) + self.trace(trie[key])
+
+    def _trace_multi(self, trie: dict): 
         t = trie
+        result = ''
         subseqs = []
 
         for key in t:
@@ -95,39 +56,17 @@ class Trieify_Regex():
                 seq += self.trace(t[key])
                 subseqs += [seq]
 
-        # no need to sort `subseqs` if only 1 item to return
         if len(subseqs) == 1:
-            sequence = preseq + subseqs[0]
-            if '**' in t and sequence[-1] != '?': 
-                sequence += '?'
-            return sequence
-
-        # first sort alphabetically
-        # second sort by reverse length (ignoring group/set/or special chars)
-        subseqs.sort()
-        subseqs.sort(key=lambda x: len(re.sub('\(\?:|[\[\|\?\+]', '', x)),
-                     reverse=True)
-
-        are_single_chars = [len(i) == 1 for i in subseqs]
-        if all(are_single_chars):
-            joined = ''.join(subseqs)
-            if any([joined in s for s in self._ORDERED]):
-                return '{}[{}-{}]'.format(preseq, joined[0], joined[-1])
-            else:
-                return '{}[{}]'.format(preseq, joined)
+            result = subseqs[0]
+        elif len(subseqs) == len(''.join(subseqs)):
+            result = '[{}]'.format(''.join(sorted(subseqs)))
         else:
-            if sum(are_single_chars) > 1:
-                ones = [s for s in subseqs if len(s) == 1]
-                multis = [s for s in subseqs if len(s) > 1]
-                seq = '(?:{}|[{}])'.format('|'.join(multis), ''.join(ones))
-            else:
-                seq = '(?:{})'.format('|'.join(subseqs))
-            
-            if '**' in t and seq[-1] != '?':
-                seq += '?'
-            return preseq + seq
+            result = '(?:{})'.format('|'.join(subseqs))
+        
+        if len(result) > 1 and result[0] not in '([':
+            result = '(?:{})'.format(result)
 
-
-'''
-timeit('m.trace(m.trie, "")', setup="import my_trie_regex as m", number=1000)
-'''
+        if ('**' in t):  
+            result += '?'
+        
+        return result
