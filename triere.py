@@ -1,17 +1,16 @@
 from re import escape
 from triere.memoizer import memoizer
-from typing import Callable
 
-class TrieRE():
+class TrieRegEx():
 
-    def __init__(self, *words: str):
+    def __init__(self, *words: str) -> None:
         self._trie = {}
         self.initial_chars = set()
         self.final_chars = set()
         self.regex = ""
         self.add(*words)
         
-    def add(self, *words: str):
+    def add(self, *words: str) -> None:
         for word in words:
             if word != '':
                 self.initial_chars.add(word[0])
@@ -24,12 +23,12 @@ class TrieRE():
                 trie['**'] = True
         self.regex = self._compose_regex(self._trie)
     
-    def remove(self, *words: str):
+    def remove(self, *words: str) -> None:
         for word in words:
-            for i in range(len(word), 0, -1):  # reverse
+            for i in range(len(word), 0, -1):
                 if self.has(word[:i]):
                     node = self._trie
-                    for j in range(i-1):  # up to last -= 1
+                    for j in range(i-1):
                         node = node[word[j]]
                     if '**' in node[word[i-1]] or len(node[word[i-1]]) == 0:
                         del node[word[i-1]]
@@ -75,7 +74,7 @@ class TrieRE():
             result = f'{result}?' if ('**' in trie) else result
             return result
     
-    def _get_final_chars(self, trie: dict, reset=True):
+    def _get_final_chars(self, trie: dict, reset :bool = True) -> None:
         if reset:
             self.final_chars = set()
         for char in trie:
