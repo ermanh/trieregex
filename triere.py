@@ -6,18 +6,39 @@ class TrieRE():
 
     def __init__(self, *words: str):
         self._trie = {}
-        self._trie_changed = False 
+        self.initial_chars = set()
+        self.final_chars = set()
+        self.regex = ""
+        self.add(*words)
+        
+    def add(self, *words: str):
         for word in words:
-            self.insert(word)
-
-    def insert(self, *words: str):
+            if word != '':
+                self.initial_chars.add(word[0])
+                self.final_chars.add(word[-1])
+                trie = self._trie
+                for char in word:
+                    if char not in trie:
+                        trie[char] = {}
+                    trie = trie[char]
+                trie['**'] = True
+        self.regex = self._compose_regex(self._trie)
+    
+    def remove(self, *words: str):
         for word in words:
-            trie = self._trie
-            for char in word:
-                if char not in trie:
-                    trie[char] = {}
-                trie = trie[char]
-            trie['**'] = True
+            for i in range(len(word), 0, -1):  # reverse
+                if self.has(word[:i]):
+                    node = self._trie
+                    for j in range(i-1):  # up to last -= 1
+                        node = node[word[j]]
+                    if '**' in node[word[i-1]] or len(node[word[i-1]]) == 0:
+                        del node[word[i-1]]
+                else:
+                    break
+        
+        self.regex = self._compose_regex(self._trie)
+        self.initial_chars = set(self._trie.keys())
+        self._get_final_chars(self._trie)
 
     def has(self, word: str) -> bool:
         trie = self._trie
@@ -28,50 +49,37 @@ class TrieRE():
                 return False
         return True
 
-    def boundary_helper(self):
-        """
-        Helper function(s) for the `boundaries` arg in self.regex()
-        - for validating/error-checking `boundaries` arg passed in
-        - alert whether there are chars in the first level nodes or leaves 
-          in the trie that are incompatible with r'\b'
-        """
-        pass
-
-    def regex(self, boundaries='') -> str:
-        result = ''
-        if type(boundaries) == str:
-            result = '{}{}{}'.format(
-                boundaries, self.trace(self._trie), boundaries)
-        elif type(boundaries) == list:
-            if (len(boundaries) != 2 or any([type(b) != str for b in boundaries])):
-                raise ValueError('list item passed in to arg `boundaries` \
-                    must contain 2 strings')
-            result = '{}{}{}'.format(
-                boundaries[0], self.trace(self._trie), boundaries[1])
-        return result
-
     @memoizer
-    def trace(self, trie: dict) -> str:
+    def _compose_regex(self, trie: dict) -> str:
         if len(trie) == 0:
             return ''
         
         elif len(trie) == 1:
             key = list(trie.keys())[0]
-            return '' if (key == '**') else escape(key) + self.trace(trie[key])        
+            if (key == '**'):
+                return ''
+            return escape(key) + self._compose_regex(trie[key])        
         
         else:
-            keys = [key for key in trie if key != '**']
-            subseqs = [escape(key) + self.trace(trie[key]) for key in keys]
-            subseqs.sort()
-            subseqs.sort(key=lambda x: len(x), reverse=True)
+            seqs = [escape(k) + self._compose_regex(trie[k]) 
+                    for k in trie if k != '**']
+            seqs.sort(key=lambda x: (-len(x), x))
 
-            if len(subseqs) == 1:
-                result = subseqs[0]
-                result = f'(?:{result})' if len(result) > 1 else result
-            elif len(subseqs) == len(''.join(subseqs)):
-                result = '[{}]'.format(''.join(subseqs))
+            if len(seqs) == 1:
+                result = f'(?:{seqs[0]})' if (len(seqs[0]) > 1) else seqs[0]
+            elif len(seqs) == len(''.join(seqs)):
+                result = '[{}]'.format(''.join(seqs))
             else:
-                result = '(?:{})'.format('|'.join(subseqs))
+                result = '(?:{})'.format('|'.join(seqs))
 
             result = f'{result}?' if ('**' in trie) else result
             return result
+    
+    def _get_final_chars(self, trie: dict, reset=True):
+        if reset:
+            self.final_chars = set()
+        for char in trie:
+            if char != '**':
+                if '**' in trie[char]:
+                    self.final_chars.add(char)
+                self._get_final_chars(trie[char], reset=False)
