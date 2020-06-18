@@ -1,5 +1,3 @@
-import re
-
 def memoizer(func):
     cache = {}
     def function_wrapper(*arg):

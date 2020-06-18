@@ -32,8 +32,7 @@ class TrieRegEx():
                         node = node[word[j]]
                     if '**' in node[word[i-1]] or len(node[word[i-1]]) == 0:
                         del node[word[i-1]]
-                else:
-                    break
+                break
         
         self.regex = self._compose_regex(self._trie)
         self.initial_chars = set(self._trie.keys())
