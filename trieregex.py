@@ -1,53 +1,53 @@
 from re import escape
+from typing import Any, Callable, Dict, List
+from collections import defaultdict
 
 
-def memoizer(func):
-    cache = {}
-    def function_wrapper(*arg):
-        stringed = str(arg[1:])  # exclude self
+def memoize(func: Callable) -> Callable:
+    cache = {}  # type: Dict[str: dict]
+
+    def memoizer(*arg: Any) -> dict:
+        stringed = str(arg[1:])
         if stringed in cache:
             return cache[stringed]
         cache[stringed] = func(*arg)
         return cache[stringed]
-    return function_wrapper
+    
+    return memoizer
 
 
 class TrieRegEx():
 
     def __init__(self, *words: str) -> None:
-        self._trie = {}
-        self.initial_chars = set()
-        self.final_chars = set()
-        self.regex = ""
+        self._trie = {}  # type: Dict[str: dict]
+        self._initials = defaultdict(int)
+        self._finals = defaultdict(int)
         self.add(*words)
-        
+
     def add(self, *words: str) -> None:
         for word in words:
             if word != '':
-                self.initial_chars.add(word[0])
-                self.final_chars.add(word[-1])
+                self._initials[word[0]] += 1
+                self._finals[word[-1]] += 1
                 trie = self._trie
                 for char in word:
                     if char not in trie:
                         trie[char] = {}
                     trie = trie[char]
-                trie['**'] = True
-        self.regex = self._compose_regex(self._trie)
-    
+                trie['**'] = {}
+
     def remove(self, *words: str) -> None:
         for word in words:
             for i in range(len(word), 0, -1):
                 if self.has(word[:i]):
+                    self._initials[word[-1]] -= 1
+                    self._finals[word[-1]] -= 1
                     node = self._trie
                     for j in range(i-1):
                         node = node[word[j]]
                     if '**' in node[word[i-1]] or len(node[word[i-1]]) == 0:
                         del node[word[i-1]]
                 break
-        
-        self.regex = self._compose_regex(self._trie)
-        self.initial_chars = set(self._trie.keys())
-        self._get_final_chars(self._trie)
 
     def has(self, word: str) -> bool:
         trie = self._trie
@@ -58,37 +58,39 @@ class TrieRegEx():
                 return False
         return True
 
-    @memoizer
-    def _compose_regex(self, trie: dict) -> str:
+    def initials(self) -> List[str]:
+        return [key for key in self._initials if self._initials[key] > 0]
+
+    def finals(self) -> List[str]:
+        return [key for key in self._finals if self._finals[key] > 0]
+
+    @memoize
+    def regex(self, trie: dict = None, reset: bool = True) -> str:
+        trie = self._trie if reset else trie
+
         if len(trie) == 0:
             return ''
-        
+
         elif len(trie) == 1:
             key = list(trie.keys())[0]
-            if (key == '**'):
+            if key == '**':
                 return ''
-            return escape(key) + self._compose_regex(trie[key])        
-        
+            return escape(key) + self.regex(trie[key], False)
+
         else:
-            seqs = [escape(k) + self._compose_regex(trie[k]) 
-                    for k in trie if k != '**']
-            seqs.sort(key=lambda x: (-len(x), x))
+            sequences = [escape(key) + self.regex(trie[key], False)
+                         for key in trie if key != '**']
+            sequences.sort(key=lambda x: (-len(x), x))  # for easier inspection
 
-            if len(seqs) == 1:
-                result = f'(?:{seqs[0]})' if (len(seqs[0]) > 1) else seqs[0]
-            elif len(seqs) == len(''.join(seqs)):
-                result = '[{}]'.format(''.join(seqs))
+            if len(sequences) == 1:
+                result = sequences[0]
+                if len(sequences[0]) > 1:
+                    result = '(?:{})'.format(result)
+            elif len(sequences) == len(''.join(sequences)):
+                result = '[{}]'.format(''.join(sequences))
             else:
-                result = '(?:{})'.format('|'.join(seqs))
+                result = '(?:{})'.format('|'.join(sequences))
 
-            result = f'{result}?' if ('**' in trie) else result
+            if '**' in trie:
+                result = result + '?'
             return result
-    
-    def _get_final_chars(self, trie: dict, reset :bool = True) -> None:
-        if reset:
-            self.final_chars = set()
-        for char in trie:
-            if char != '**':
-                if '**' in trie[char]:
-                    self.final_chars.add(char)
-                self._get_final_chars(trie[char], reset=False)
