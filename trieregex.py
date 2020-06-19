@@ -41,9 +41,9 @@ class TrieRegEx():
             remove_word = False
             for i in range(len(word), 0, -1):
                 is_end = i == len(word)
-                if is_end and self.has(word[:i]):  #, removal_check=True):
+                if is_end and self.has(word[:i]):
                     remove_word = True
-                    self._initials[word[-1]] -= 1
+                    self._initials[word[0]] -= 1
                     self._finals[word[-1]] -= 1
                 if remove_word:
                     node = self._trie
@@ -62,14 +62,13 @@ class TrieRegEx():
                 else:
                     break
 
-    def has(self, word: str) -> bool:  #, removal_check: bool = False) -> bool:
+    def has(self, word: str) -> bool:
         trie = self._trie
         for char in word:
             if char in trie:
                 trie = trie[char]
             else:
                 return False
-        # if not removal_check:
         if '**' not in trie:
             return False
         return True

@@ -1,5 +1,3 @@
-# TODO: TO BE COMPLETED
-
 from trieregex.trieregex import TrieRegEx as TRE
 import unittest
 
