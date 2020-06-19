@@ -1,6 +1,6 @@
 from re import escape
-from typing import Any, Callable, Dict, List
 from collections import defaultdict
+from typing import Any, Callable, Dict, List
 
 
 def memoize(func: Callable) -> Callable:
@@ -38,10 +38,13 @@ class TrieRegEx():
 
     def remove(self, *words: str) -> None:
         for word in words:
+            remove_word = False
             for i in range(len(word), 0, -1):
-                if self.has(word[:i]):
+                if i == len(word) and self.has(word[:i]):
+                    remove_word = True
                     self._initials[word[-1]] -= 1
                     self._finals[word[-1]] -= 1
+                if remove_word:
                     node = self._trie
                     for j in range(i-1):
                         node = node[word[j]]
@@ -57,6 +60,8 @@ class TrieRegEx():
                 trie = trie[char]
             else:
                 return False
+        if '**' not in trie:
+            return False
         return True
 
     def initials(self) -> List[str]:

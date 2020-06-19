@@ -1,4 +1,4 @@
-from trieregex import trieregex
+from trieregex.trieregex import TrieRegEx as TRE
 import unittest
 
 
@@ -10,52 +10,79 @@ class TestTrieRegEx(unittest.TestCase):
     def setUp(self):
         self.words = ['heart', 'healthy', 'pear', 'peach', 
                       'lark', 'look', 'change']
-        self.tre = trieregex.TrieRegEx(*self.words)
+        self.tre = TRE(*self.words)
 
     def test_add(self):
-        assert self.tre._trie == {
-            'c': {'h': {'a': {'n': {'g': {'e': {'**': {}}}}}}},
-            'l': {'a': {'r': {'k': {'**': {}}}}, 
-                  'o': {'o': {'k': {'**': {}}}}},
-            'h': {'e': {'a': {'l': {'t': {'h': {'y': {'**': {}}}}},
-                              'r': {'t': {'**': {}}}}}},
-            'p': {'e': {'a': {'c': {'h': {'**': {}}}, 
-                              'r': {'**': {}}}}}
-        }
+        self.assertEqual(
+            self.tre._trie, 
+            {
+                'c': {'h': {'a': {'n': {'g': {'e': {'**': {}}}}}}},
+                'l': {'a': {'r': {'k': {'**': {}}}}, 
+                    'o': {'o': {'k': {'**': {}}}}},
+                'h': {'e': {'a': {'l': {'t': {'h': {'y': {'**': {}}}}},
+                                'r': {'t': {'**': {}}}}}},
+                'p': {'e': {'a': {'c': {'h': {'**': {}}}, 
+                                'r': {'**': {}}}}}
+            }, 
+            "Words were not added to the trie (._trie) properly"
+        )
 
     def test_has(self):
+        for word in self.words:
+            self.assertTrue(
+                self.tre.has(word),
+                f"'{word}' should be searchable in trie"
+            )
         non_existing = ['hear', 'ear', 'each', 'hang', 'ok', 'heal', 'pa']
-        assert (
-            all([self.tre.has(word) for word in self.words]) and
-            not all([self.tre.has(word) for word in non_existing])
-        )
+        for word in non_existing:
+            self.assertFalse(
+                self.tre.has(word), 
+                f"'{word}' should not be searchable in trie"
+            )
 
     def test_remove(self):
         self.tre.remove('healthy', 'change')
-        assert self.tre._trie == {
-            'l': {'a': {'r': {'k': {'**': {}}}},
-                  'o': {'o': {'k': {'**': {}}}}},
-            'h': {'e': {'a': {'r': {'t': {'**': {}}}}}},
-            'p': {'e': {'a': {'c': {'h': {'**': {}}},
-                              'r': {'**': {}}}}}
-        }
+        self.assertEqual(
+            self.tre._trie,
+            {
+                'l': {'a': {'r': {'k': {'**': {}}}},
+                    'o': {'o': {'k': {'**': {}}}}},
+                'h': {'e': {'a': {'r': {'t': {'**': {}}}}}},
+                'p': {'e': {'a': {'c': {'h': {'**': {}}},
+                                'r': {'**': {}}}}}
+            },
+            "'healthy' and 'change' were not properly removed from the trie"
+        )
 
     def test_initials_variable(self):
-        assert self.tre._initials == {'c': 1, 'h': 2, 'l': 2, 'p': 2}
+        self.assertEqual(
+            self.tre._initials,
+            {'c': 1, 'h': 2, 'l': 2, 'p': 2},
+        )
 
     def test_initials(self):
-        assert self.tre.initials() == ['c', 'h', 'l', 'p']
+        self.assertEqual(
+            self.tre.initials(),
+            ['c', 'h', 'l', 'p']
+        )
 
     def test_finals_variable(self):
-        assert (self.tre._finals == 
-                {'e': 1, 'h': 1, 'k': 2, 'r': 1, 't': 1, 'y': 1})
+        self.assertEqual(
+            self.tre._finals,
+            {'e': 1, 'h': 1, 'k': 2, 'r': 1, 't': 1, 'y': 1}
+        )
 
     def test_finals(self):
-        assert self.tre.finals() == ['e', 'h', 'k', 'r', 't', 'y']
+        self.assertEqual(
+            self.tre.finals(),
+            ['e', 'h', 'k', 'r', 't', 'y']
+        )
 
     def test_regex(self):
-        assert (self.tre.regex() ==
-                "(?:hea(?:lthy|rt)|l(?:ark|ook)|pea(?:ch|r)|change)")
+        self.assertEqual(
+            self.tre.regex(),
+            "(?:hea(?:lthy|rt)|l(?:ark|ook)|pea(?:ch|r)|change)"
+        )
 
 
 if __name__ == '__main__':
