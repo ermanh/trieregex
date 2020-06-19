@@ -7,8 +7,6 @@ class TestTrieRegEx(unittest.TestCase):
     """
 
     def setUp(self):
-        self.words = ['heart', 'healthy', 'pear', 'peach',
-                      'lark', 'look', 'change']
         self.tre = TRE()
 
     def test_one_word(self):
