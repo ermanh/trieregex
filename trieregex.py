@@ -40,7 +40,8 @@ class TrieRegEx():
         for word in words:
             remove_word = False
             for i in range(len(word), 0, -1):
-                if i == len(word) and self.has(word[:i]):
+                is_end = i == len(word)
+                if is_end and self.has(word[:i]):  #, removal_check=True):
                     remove_word = True
                     self._initials[word[-1]] -= 1
                     self._finals[word[-1]] -= 1
@@ -48,18 +49,27 @@ class TrieRegEx():
                     node = self._trie
                     for j in range(i-1):
                         node = node[word[j]]
-                    if '**' in node[word[i-1]] or len(node[word[i-1]]) == 0:
-                        del node[word[i-1]]
+                    penult_node = node[word[i-1]]
+                    if is_end:
+                        if '**' in penult_node:
+                            if len(penult_node) == 1:
+                                del node[word[i-1]]
+                            else:
+                                del penult_node['**']
+                    else:
+                        if len(penult_node) == 0:
+                            del node[word[i-1]]
                 else:
                     break
 
-    def has(self, word: str) -> bool:
+    def has(self, word: str) -> bool:  #, removal_check: bool = False) -> bool:
         trie = self._trie
         for char in word:
             if char in trie:
                 trie = trie[char]
             else:
                 return False
+        # if not removal_check:
         if '**' not in trie:
             return False
         return True

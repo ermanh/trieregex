@@ -27,19 +27,6 @@ class TestTrieRegEx(unittest.TestCase):
             "Words were not added to the trie (._trie) properly"
         )
 
-    def test_has(self):
-        for word in self.words:
-            self.assertTrue(
-                self.tre.has(word),
-                f"'{word}' should be searchable in trie"
-            )
-        non_existing = ['hear', 'ear', 'each', 'hang', 'ok', 'heal', 'pa']
-        for word in non_existing:
-            self.assertFalse(
-                self.tre.has(word), 
-                f"'{word}' should not be searchable in trie"
-            )
-
     def test_remove(self):
         self.tre.remove('healthy', 'change')
         self.assertEqual(
@@ -53,6 +40,19 @@ class TestTrieRegEx(unittest.TestCase):
             },
             "'healthy' and 'change' were not properly removed from the trie"
         )
+
+    def test_has(self):
+        for word in self.words:
+            self.assertTrue(
+                self.tre.has(word),
+                f"'{word}' should be searchable in trie"
+            )
+        non_existing = ['hear', 'ear', 'each', 'hang', 'ok', 'heal', 'pa']
+        for word in non_existing:
+            self.assertFalse(
+                self.tre.has(word),
+                f"'{word}' should not be searchable in trie"
+            )
 
     def test_initials_variable(self):
         self.assertEqual(
