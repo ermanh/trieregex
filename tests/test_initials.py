@@ -72,7 +72,7 @@ class TestInitials(unittest.TestCase):
             self.tre._initials,
             {'a': 1, 't': 1, 's': 3, 'w': 2, 'f': 1, 'n': 2, 'b': 1, 'e': 1,
              'å': 1},
-            "new key 'å'should have a value of 1"
+            "new key 'å' should have a value of 1"
     )
 
     def test_remove_word_lower_frequency(self):
@@ -97,7 +97,7 @@ class TestInitials(unittest.TestCase):
         self.assertEqual(
             self.tre._initials,
             {'a': 0, 't': 0, 's': 0, 'w': 0, 'f': 0, 'n': 0, 'b': 0, 'e': 0},
-            "All keys should be set to 0"
+            "All keys should be set to a value of 0"
         )
 
 
