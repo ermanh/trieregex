@@ -3,7 +3,7 @@ import unittest
 
 
 class TestHas(unittest.TestCase):
-    """Tests TrieRegEx().has()
+    """Tests for TrieRegEx().has()
     """
 
     def setUp(self):

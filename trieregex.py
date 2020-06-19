@@ -26,7 +26,7 @@ class TrieRegEx():
 
     def add(self, *words: str) -> None:
         for word in words:
-            if word != '':
+            if word != '' and not self.has(word):
                 self._initials[word[0]] += 1
                 self._finals[word[-1]] += 1
                 trie = self._trie
