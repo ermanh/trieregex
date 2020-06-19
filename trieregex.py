@@ -1,19 +1,28 @@
 from re import escape
 from collections import defaultdict
 from typing import Any, Callable, Dict, List
+import functools
 
 
-def memoize(func: Callable) -> Callable:
-    cache = {}  # type: Dict[str: dict]
+class Memoize:
 
-    def memoizer(*arg: Any) -> dict:
-        stringed = str(arg[1:])
-        if stringed in cache:
-            return cache[stringed]
-        cache[stringed] = func(*arg)
-        return cache[stringed]
-    
-    return memoizer
+    def __init__(self, func):
+        self.func = func
+        self.cache = {}
+
+    def __call__(self, *args):
+        stringed = str(args)
+        if stringed not in self.cache:
+            self.cache[stringed] = self.func(*args)
+        return self.cache[stringed]
+
+    def __get__(self, obj, objtype):
+          fn = functools.partial(self.__call__, obj)
+          fn.reset = self._reset
+          return fn
+
+    def _reset(self):
+        self.cache.clear()
 
 
 class TrieRegEx():
@@ -23,12 +32,12 @@ class TrieRegEx():
         self._initials = defaultdict(int)
         self._finals = defaultdict(int)
         self.add(*words)
-
+    
     def add(self, *words: str) -> None:
+        self.regex.reset()
         for word in words:
             if word != '' and not self.has(word):
-                self._initials[word[0]] += 1
-                self._finals[word[-1]] += 1
+                self.adjust_initials_finals(word)
                 trie = self._trie
                 for char in word:
                     if char not in trie:
@@ -36,15 +45,23 @@ class TrieRegEx():
                     trie = trie[char]
                 trie['**'] = {}
 
+    def adjust_initials_finals(self, word, increase=True):
+        if increase:
+            self._initials[word[0]] += 1
+            self._finals[word[-1]] + 1
+        else:
+            self._initials[word[0]] -= 1
+            self._finals[word[-1]] -= 1
+
     def remove(self, *words: str) -> None:
+        self.regex.reset()
         for word in words:
             remove_word = False
             for i in range(len(word), 0, -1):
                 is_end = i == len(word)
                 if is_end and self.has(word[:i]):
                     remove_word = True
-                    self._initials[word[0]] -= 1
-                    self._finals[word[-1]] -= 1
+                    self.adjust_initials_finals(word, increase=False)
                 if remove_word:
                     node = self._trie
                     for j in range(i-1):
@@ -81,9 +98,10 @@ class TrieRegEx():
         result = [key for key in self._finals if self._finals[key] > 0]
         return sorted(result)
 
-    @memoize
+    @Memoize
     def regex(self, trie: dict = None, reset: bool = True) -> str:
-        trie = self._trie if reset else trie
+        if reset:
+            trie = self._trie
 
         if len(trie) == 0:
             return ''
