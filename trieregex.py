@@ -47,7 +47,8 @@ class TrieRegEx():
                         node = node[word[j]]
                     if '**' in node[word[i-1]] or len(node[word[i-1]]) == 0:
                         del node[word[i-1]]
-                break
+                else:
+                    break
 
     def has(self, word: str) -> bool:
         trie = self._trie
@@ -59,10 +60,12 @@ class TrieRegEx():
         return True
 
     def initials(self) -> List[str]:
-        return [key for key in self._initials if self._initials[key] > 0]
+        result = [key for key in self._initials if self._initials[key] > 0]
+        return sorted(result)
 
     def finals(self) -> List[str]:
-        return [key for key in self._finals if self._finals[key] > 0]
+        result = [key for key in self._finals if self._finals[key] > 0]
+        return sorted(result)
 
     @memoize
     def regex(self, trie: dict = None, reset: bool = True) -> str:
