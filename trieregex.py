@@ -1,10 +1,10 @@
 from re import escape
 from collections import defaultdict
-from typing import Any, Callable, Dict, List
-import functools
+from typing import Dict, List
+from functools import partial
 
 
-class Memoize:
+class Memoizer:
 
     def __init__(self, func):
         self.func = func
@@ -17,11 +17,11 @@ class Memoize:
         return self.cache[stringed]
 
     def __get__(self, obj, objtype):
-          fn = functools.partial(self.__call__, obj)
-          fn.reset = self._reset
+          fn = partial(self.__call__, obj)
+          fn.clear_cache = self._clear_cache
           return fn
 
-    def _reset(self):
+    def _clear_cache(self):
         self.cache.clear()
 
 
@@ -33,8 +33,9 @@ class TrieRegEx():
         self._finals = defaultdict(int)
         self.add(*words)
     
+    @Memoizer
     def add(self, *words: str) -> None:
-        self.regex.reset()
+        self.regex.clear_cache()  # better performance to clear just once
         for word in words:
             if word != '' and not self.has(word):
                 self.adjust_initials_finals(word)
@@ -44,17 +45,19 @@ class TrieRegEx():
                         trie[char] = {}
                     trie = trie[char]
                 trie['**'] = {}
+        # self.add.reset()
 
     def adjust_initials_finals(self, word, increase=True):
         if increase:
             self._initials[word[0]] += 1
-            self._finals[word[-1]] + 1
+            self._finals[word[-1]] += 1
         else:
             self._initials[word[0]] -= 1
             self._finals[word[-1]] -= 1
 
     def remove(self, *words: str) -> None:
-        self.regex.reset()
+        self.add.clear_cache()    # better performance to clear just once
+        self.regex.clear_cache()
         for word in words:
             remove_word = False
             for i in range(len(word), 0, -1):
@@ -98,7 +101,7 @@ class TrieRegEx():
         result = [key for key in self._finals if self._finals[key] > 0]
         return sorted(result)
 
-    @Memoize
+    @Memoizer
     def regex(self, trie: dict = None, reset: bool = True) -> str:
         if reset:
             trie = self._trie
