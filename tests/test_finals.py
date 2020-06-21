@@ -83,7 +83,7 @@ class TestFinals(unittest.TestCase):
             "'s' should have a value of 0 (down from 1)"
         )
 
-    def test_zero_frequency_should_not_appear_in_function_call(self):
+    def test_zero_frequency_should_not_appear(self):
         self.tre.remove('stars')
         self.assertEqual(
             self.tre.finals(),
@@ -91,7 +91,7 @@ class TestFinals(unittest.TestCase):
             "'s' should not appear in the list"
         )
 
-    def test_remove_nonexisting_word_initial_with_zero_frequency(self):
+    def test_remove_nonexisting_final_with_zero_frequency(self):
         self.tre.remove('stars')  # set 's': 1 -> 't': 0
         self.tre.remove('spotlights')  # attempt removal of nonexisting word
         self.assertEqual(

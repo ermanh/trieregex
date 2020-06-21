@@ -83,7 +83,7 @@ class TestInitials(unittest.TestCase):
             "'t' should have a value of 0 (down from 1)"
         )
 
-    def test_zero_frequency_should_not_appear_in_function_call(self):
+    def test_zero_frequency_should_not_appear(self):
         self.tre.remove('the')
         self.assertEqual(
             self.tre.initials(),
@@ -91,7 +91,7 @@ class TestInitials(unittest.TestCase):
             "'t' should not appear in the list"
         )
 
-    def test_remove_nonexisting_word_initial_with_zero_frequency(self):
+    def test_remove_nonexisting_initial_with_zero_frequency(self):
         self.tre.remove('the')  # set 't': 1 -> 't': 0
         self.tre.remove('table')  # attempt removal of nonexisting word
         self.assertEqual(

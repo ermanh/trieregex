@@ -2,7 +2,7 @@ from trieregex.trieregex import TrieRegEx as TRE
 import unittest
 
 
-class TestTrieRegEx(unittest.TestCase):
+class TestAdd(unittest.TestCase):
     """Tests for TrieRegEx().add()
     """
 
