@@ -1,7 +1,8 @@
-from trieregex.trieregex import TrieRegEx as TRE
-import unittest
 import re
 from typing import List
+import unittest
+
+from trieregex import TrieRegEx as TRE
 
 
 class TestRegex(unittest.TestCase):

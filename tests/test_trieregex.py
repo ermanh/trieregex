@@ -1,5 +1,6 @@
-from trieregex.trieregex import TrieRegEx as TRE
 import unittest
+
+from trieregex import TrieRegEx as TRE
 
 
 class TestTrieRegEx(unittest.TestCase):
@@ -28,6 +29,7 @@ class TestTrieRegEx(unittest.TestCase):
         )
 
     def test_remove(self):
+        self.tre = TRE(*self.words)
         self.tre.remove('healthy', 'change')
         self.assertEqual(
             self.tre._trie,

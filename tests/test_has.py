@@ -1,5 +1,6 @@
-from trieregex.trieregex import TrieRegEx as TRE
 import unittest
+
+from trieregex import TrieRegEx as TRE
 
 
 class TestHas(unittest.TestCase):

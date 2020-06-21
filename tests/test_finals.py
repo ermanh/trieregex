@@ -1,6 +1,7 @@
-from trieregex.trieregex import TrieRegEx as TRE
 import unittest
 from collections import defaultdict
+
+from trieregex import TrieRegEx as TRE
 
 
 class TestFinals(unittest.TestCase):
