@@ -1,21 +1,25 @@
 # trieregex
 
-**trieregex** composes time- and space-saving regular expressions (regexes) by storing a list of words as a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating it into a more compact pattern. Memoization has also been implemented to speed up internal methods.
+[**trieregex**](https://github.com/ermanh/trieregex/) composes efficient [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) (regexes) by storing a list of words in a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating the trie into a more compact pattern.
+
+The speed performance of these trie-based regex patterns (e.g. `r'(?:under(?:statement|stand|take|go)?)'`), compared to a straightforward regex union (i.e., `r'(?:understatement|understand|undertake|undergo)'`, becomes evident when using extremely large word lists and _especially_ when more specific or complicated contexts are specified at the boundaries. 
+
+This package is implemented with [memoization](https://en.wikipedia.org/wiki/Memoization) to further cut down on processing time.
 
 ## Usage
 
 ```py
 from trieregex import TrieRegEx as TRE
 
-words = ['lemon', 'lime', 'pomelo', 'orange', 'oro_blanco', 'citron']
+words = ['lemon', 'lime', 'pomelo', 'orange', 'citron']
 more_words = ['grapefruit', 'grape', 'tangerine', 'tangelo']
 
 # Initialize class instance
 tre = TRE()
 
 # Add word(s)
-tre = TRE(*words)  # word(s) can be added upon instance creation
-tre.add('kumquat')  # add one word
+tre = TRE(*words)  # word(s) can be added upon instance creation...
+tre.add('kumquat')  # add one word (... or after)
 tre.add(*more_words)  # add a list of words 
 
 # Remove word(s)
@@ -24,6 +28,7 @@ tre.remove(*words)  # remove a list of words
 
 # Check if a word exists in the trie
 tre.has('citron')  # Returns: False
+tre.has('tangerine')  # Returns: True
 
 # Create regex pattern from the trie
 tre.regex()  # Returns: '(?:tange(?:rine|lo)|grape(?:fruit)?|kumquat)'
@@ -36,9 +41,9 @@ tre.finals()  # Returns: ['e', 'o', 't']
 
 ```
 
-### Inspecting initial and final characters for nuanced regex creation
+### Boundary agnostic
 
-Not all users necessarily want to normalize their words/patterns to exclude non-word characters (and in some cases may also want to match patterns surrounded by contexts that are not whitespace or punctuation). 
+**trieregex** does not include any default boundaries (such as `r'\b'`) in the pattern returned from its `TrieRegEx.regex()` method, and leaves it to the user to determine what is appropriate per use case. This ensures the tool stays versatile, rather than force users to normalize everything to fit the tool.
 
 Consider a fictitious brand name called `!Citrus` with an obligatory exclamation mark at the beginning:
 
@@ -47,9 +52,14 @@ import re
 
 string = 'I love !Citrus products!'
 re.findall(r'\b(!Citrus)\b', string)  # Returns: []
-re.findall(r' (!Citrus)\b', string)  # Returns: ['!Citrus']
 ```
 
-The first `re.findall()` call returns an empty list is because `r'\b'` stands for the boundary between a word character (all letters and digits, and the underscore) and a non-word character, but the boundary between the exclamation mark and its preceding space in `'I love !Citrus products!'` is that between two non-word characters, resulting in no match.
+The `re.findall()` call returns an empty list because the first `r'\b'` is not matched. `r'\b'` stands for the boundary between a word character (all letters and digits plus the underscore) and a non-word character, but the "boundary" between the exclamation mark and its preceding space character is that between two non-word characters, thus resulting in no match.
 
-For this reason, **trieregex** does not include any default boundary conditions (such as `r'\b'`) in its `TrieRegEx.regex()` method, and leaves it to users to determine what is appropriate per their use case.
+A more desirable regex for the above example might be as follows, where the context before the exclamation mark can be either start-of-string or a non-word character: 
+
+```py
+re.findall(r'(?:^|[^\w])(!Citrus)\b', string)  # Returns: ['!Citrus']
+```
+
+**trieregex** therefore allows the inclusion of any pattern in its trie, not just natural language words normally bounded by space or punctuation. The regex patterns it produces can similarly be expanded for seaching/matching patterns in any context within the string.
