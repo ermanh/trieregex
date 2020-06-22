@@ -1,5 +1,4 @@
 import re
-from typing import List
 import unittest
 
 from trieregex import TrieRegEx as TRE
@@ -21,30 +20,21 @@ class TestRegex(unittest.TestCase):
             'scallion', 'ginger', 'garlic', 'onion', 'galangal'
         ]
 
-    def findall(self, string: str, boundary: str) -> List[str]:
-        """Helper function. The TrieRegEx.regex() function is called here and 
-        the result of regex matching is returned
-        """
-        pattern = re.compile(f'{boundary}{self.tre.regex()}{boundary}')
-        return sorted(pattern.findall(string))
-
     def test_match_all_incrementals(self):
         self.tre.add(*self.words)
-        found = self.findall(' '.join(self.words), '\\b')
+        found = re.findall(f'\\b{self.tre.regex()}\\b', ' '.join(self.words))
 
-        self.assertEqual(found, sorted(self.words))
+        self.assertEqual(sorted(found), sorted(self.words))
 
     def test_does_not_match_larger_string(self):
         self.tre.add('p')
-        found = self.findall('pe', '\\b')
-
+        found = re.findall(f'\\b{self.tre.regex()}\\b', 'pe')
         self.assertEqual(found, [])
 
     def test_does_not_match_substring(self):
         my_words = self.words[1:]  # leave out 'p'
         self.tre.add(*my_words)
-        found = self.findall(' '.join(self.words), '\\b')
-
+        found = re.findall(f'\\b{self.tre.regex()}\\b', ' '.join(self.words))
         self.assertEqual(
             found, 
             sorted(my_words), 
@@ -56,13 +46,14 @@ class TestRegex(unittest.TestCase):
     
     def test_match_all_words(self):
         self.tre.add(*self.more_words)
-        found = self.findall(' '.join(sorted(self.more_words)), '\\b')
-        self.assertEqual(found, sorted(self.more_words))
+        pattern = f'\\b{self.tre.regex()}\\b'
+        found = re.findall(pattern, ' '.join(self.more_words))
+        self.assertEqual(sorted(found), sorted(self.more_words))
 
     def test_match_all_words_surrounded_by_spaces(self):
         words = sorted(self.more_words)
         self.tre.add(*words)
-        found = re.findall(f"(?<= ){'|'.join(words)}(?= )", ' '.join(words))
+        found = re.findall(f"(?<= ){self.tre.regex()}(?= )", ' '.join(words))
         self.assertEqual(
             found,
             words[1:-1],

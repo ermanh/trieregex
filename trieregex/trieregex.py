@@ -24,7 +24,7 @@ class TrieRegEx():
 
     @Memoizer
     def add(self, *words: str) -> None:
-        self.regex.clear_cache()  # better performance to clear just once
+        self.regex.clear_cache()
         for word in words:
             if word != '' and not self.has(word):
                 self._adjust_initials_finals(word)
@@ -36,7 +36,7 @@ class TrieRegEx():
                 trie['**'] = {}
 
     def remove(self, *words: str) -> None:
-        self.add.clear_cache()    # better performance to clear just once
+        self.add.clear_cache()
         self.regex.clear_cache()
         for word in words:
             remove_word = False
@@ -98,7 +98,7 @@ class TrieRegEx():
         else:
             sequences = [f'{escape(key)}{self.regex(trie[key], False)}'
                          for key in trie if key != '**']
-            sequences.sort(key=lambda x: (-len(x), x))  # for easier inspection
+            sequences.sort(key=lambda x: (-len(x), x))
 
             if len(sequences) == 1:
                 result = sequences[0]
