@@ -14,20 +14,13 @@ class TrieRegEx():
         self._finals = defaultdict(int)
         self.add(*words)
     
-    def _adjust_initials_finals(self, word, increase=True):
-        if increase:
-            self._initials[word[0]] += 1
-            self._finals[word[-1]] += 1
-        else:
-            self._initials[word[0]] -= 1
-            self._finals[word[-1]] -= 1
-
     @Memoizer
     def add(self, *words: str) -> None:
         self.regex.clear_cache()
         for word in words:
             if word != '' and not self.has(word):
-                self._adjust_initials_finals(word)
+                self._initials[word[0]] += 1
+                self._finals[word[-1]] += 1
                 trie = self._trie
                 for char in word:
                     if char not in trie:
@@ -44,7 +37,8 @@ class TrieRegEx():
                 is_end = i == len(word)
                 if is_end and self.has(word[:i]):
                     remove_word = True
-                    self._adjust_initials_finals(word, increase=False)
+                    self._initials[word[0]] -= 1
+                    self._finals[word[-1]] -= 1
                 if remove_word:
                     node = self._trie
                     for j in range(i-1):
@@ -69,9 +63,7 @@ class TrieRegEx():
                 trie = trie[char]
             else:
                 return False
-        if '**' not in trie:
-            return False
-        return True
+        return True if ('**' in trie) else False
 
     def initials(self) -> List[str]:
         result = [key for key in self._initials if self._initials[key] > 0]
