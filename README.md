@@ -3,9 +3,9 @@
 [![pypi Version](https://img.shields.io/pypi/v/trieregex.svg?logo=pypi&logoColor=white)](https://pypi.org/project/trieregex/)
 [![python](https://img.shields.io/pypi/pyversions/trieregex.svg?logo=python&logoColor=white)](https://pypi.org/project/trieregex/)
 
-[**trieregex**](https://github.com/ermanh/trieregex/) creates efficient [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) (regexes) by storing a list of words in a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating the trie into a more compact pattern.
+[**trieregex**](https://github.com/ermanh/trieregex/) creates efficient regular expressions (regexes) by storing a list of words in a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating the trie into a more compact pattern.
 
-The speed performance of a trie-based regex (e.g. `r'(?:under(?:sta(?:nd|te))|take|go)?)'`), compared to a flat regex union (i.e., `r'(?:understand|understate|undertake|undergo)'`, becomes obvious when using extremely large word lists, and especially when more specific or complicated contexts are specified at the boundaries. The processing time of using this package itself is also minimized with [memoization](https://en.wikipedia.org/wiki/Memoization).
+The speed performance of a trie-based regex (e.g. `r'(?:under(?:sta(?:nd|te))|take|go)?)'`), compared to a flat regex union (i.e., `r'(?:understand|understate|undertake|undergo)'`, becomes obvious when using extremely large word lists, and especially when more specific or complicated contexts are specified at the boundaries. The processing time of using this package itself is also minimized with memoization.
 
 ## Installation
 
@@ -55,7 +55,7 @@ tre.finals()  # Returns: ['e', 'o', 't']
 
 The last two methods are intended for the user to check what boundary contexts may be appropriate to set in the final regex. More discussed below.
 
-## Boundaries
+## (No) Boundaries
 
 **trieregex** does not include any default boundaries (such as `r'\b'`) in the pattern returned from its `TrieRegEx.regex()` method, so that the user can determine what is appropriate for their particular use case. 
 
@@ -78,6 +78,6 @@ This package was designed to allow any pattern in its trie, not just normal word
 
 ## Python version comptability
 
-Due to [f-strings](https://www.python.org/dev/peps/pep-0498/) and type hints, this package is only comptible with Python versions >=3.6. 
+Due to [f-strings](https://www.python.org/dev/peps/pep-0498/) and type hints, this package is only compatible with Python versions >=3.6. 
 
 For Python versions >=2.7, <3.6, backports such as [`future-fstrings`](https://pypi.org/project/future-fstrings/) and [`typing`](https://pypi.org/project/typing/) are available.
