@@ -2,6 +2,7 @@
 
 [![pypi Version](https://img.shields.io/pypi/v/trieregex.svg?logo=pypi&logoColor=white)](https://pypi.org/project/trieregex/)
 [![python](https://img.shields.io/pypi/pyversions/trieregex.svg?logo=python&logoColor=white)](https://pypi.org/project/trieregex/)
+[![codecov](https://img.shields.io/codecov/c/github/ermanh/trieregex/master?logo=codecov&logoColor=white)](https://codecov.io/gh/ermanh/trieregex)
 
 [**trieregex**](https://github.com/ermanh/trieregex/) creates efficient [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) (regexes) by storing a list of words in a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating the trie into a more compact pattern.
 
