@@ -5,8 +5,7 @@ from trieregex import TrieRegEx as TRE
 
 
 class TestRegex(unittest.TestCase):
-    """Tests for TrieRegEx().regex()
-    """
+    """Tests for TrieRegEx.regex()"""
 
     def setUp(self):
         self.tre = TRE()

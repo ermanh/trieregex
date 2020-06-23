@@ -4,8 +4,7 @@ from trieregex import TrieRegEx as TRE
 
 
 class TestRemove(unittest.TestCase):
-    """Tests for TrieRegEx().remove()
-    """
+    """Tests for TrieRegEx.remove()"""
 
     def setUp(self):
         self.words = ['heart', 'healthy', 'pear', 'peach',

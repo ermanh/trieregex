@@ -5,8 +5,7 @@ from trieregex import TrieRegEx as TRE
 
 
 class TestInitials(unittest.TestCase):
-    """Tests for TrieRegEx().initials() and TrieRegEx()._initials
-    """
+    """Tests for TrieRegEx.initials() and TrieRegEx._initials"""
 
     def setUp(self):
         self.words = ['all', 'the', 'stars', 'we', 'steal', 'from',

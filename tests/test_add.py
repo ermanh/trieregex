@@ -4,8 +4,7 @@ from trieregex import TrieRegEx as TRE
 
 
 class TestAdd(unittest.TestCase):
-    """Tests for TrieRegEx().add()
-    """
+    """Tests for TrieRegEx.add()"""
 
     def setUp(self):
         self.tre = TRE()

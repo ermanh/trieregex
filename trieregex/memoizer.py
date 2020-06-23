@@ -3,12 +3,15 @@ from typing import Any, Callable, Dict, Type
 
 
 class Memoizer:
+    """Decorator class for increasing the processing speed of a function using 
+    memoization
+    """
     __slots__ = ['func', 'cache']
 
     def __init__(self, func):
         # type: (Callable) -> None
         self.func = func
-        self.cache = {}  # type: Dict[str, dict]
+        self.cache = {}  # type: Dict[str, Any]
 
     def __call__(self, *args):
         # type: (Any) -> Dict[str, Any]

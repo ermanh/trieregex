@@ -6,6 +6,14 @@ from .memoizer import Memoizer
 
 
 class TrieRegEx:
+    """Builds a regular expression from a trie based on user-provided words
+
+    Includes methods for:
+    (1) adding and removing words from a trie, 
+    (2) checking whether a word exists in the trie, 
+    (3) inspecting initial and final characters in the trie, and
+    (4) creating a regular expression pattern from the trie.
+    """
     __slots__ = ['_trie', '_initials', '_finals']
 
     def __init__(self, *words):
@@ -18,6 +26,7 @@ class TrieRegEx:
     @Memoizer
     def add(self, *words):
         # type: (str) -> None
+        """Add a word or words to the trie"""
         self.regex.clear_cache()
         for word in words:
             if word != '' and not self.has(word):
@@ -32,6 +41,7 @@ class TrieRegEx:
 
     def remove(self, *words):
         # type: (str) -> None
+        """Remove a word or words from the trie"""
         self.add.clear_cache()
         self.regex.clear_cache()
         for word in words:
@@ -61,6 +71,7 @@ class TrieRegEx:
 
     def has(self, word):
         # type: (str) -> bool
+        """Check if a word exists in the trie"""
         trie = self._trie
         for char in word:
             if char in trie:
@@ -71,17 +82,20 @@ class TrieRegEx:
 
     def initials(self):
         # type: () -> List[str]
+        """Returns a list of unique initial characters in the trie"""
         result = [key for key in self._initials if self._initials[key] > 0]
         return sorted(result)
 
     def finals(self):
         # type: () -> List[str]
+        """Returns a list of unique final characters in the trie"""
         result = [key for key in self._finals if self._finals[key] > 0]
         return sorted(result)
 
     @Memoizer
     def regex(self, trie={}, reset=True):
         # type: (Dict[str, Any], bool) -> str
+        """Returns an escaped regex string"""
         if reset:
             trie = self._trie
 

@@ -4,8 +4,7 @@ from trieregex import TrieRegEx as TRE
 
 
 class TestHas(unittest.TestCase):
-    """Tests for TrieRegEx().has()
-    """
+    """Tests for TrieRegEx.has()"""
 
     def setUp(self):
         self.words = ['heal', 'health', 'healthy', 'healthier', 'healthiest']

@@ -5,8 +5,7 @@ from trieregex import TrieRegEx as TRE
 
 
 class TestFinals(unittest.TestCase):
-    """Tests for TrieRegEx().finals() and TrieRegEx()._finals
-    """
+    """Tests for TrieRegEx.finals() and TrieRegEx._finals"""
 
     def setUp(self):
         self.words = ['all', 'the', 'stars', 'we', 'steal', 'from',
