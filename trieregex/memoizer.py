@@ -17,9 +17,9 @@ class Memoizer:
             self.cache[stringed] = self.func(*args)
         return self.cache[stringed]
 
-    def __get__(self, obj, objtype):
+    def __get__(self, instance, owner):
         # type: (object, Type) -> Callable
-        fn = partial(self.__call__, obj)
+        fn = partial(self.__call__, instance)
         fn.clear_cache = self._clear_cache
         return fn
 

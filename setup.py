@@ -1,10 +1,18 @@
+from os import path
 from setuptools import setup, find_packages
+
+from trieregex import __version__
+
+
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, 'README.txt'), 'r') as f:
+    readme = f.read()
 
 setup(
     name='trieregex',
-    version='1.0.0',
-    description='Compose efficient trie-based regexes from large word lists',
-    long_description='',
+    version=__version__,
+    description='Build trie-based regular expressions from large word lists',
+    long_description=readme,
     author='Herman Leung',
     author_email='leung.hm@gmail.com',
     url='https://github.com/ermanh/trieregex',
@@ -21,6 +29,6 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    keywords=['python', 'regular expressions', 'regex', 'pattern', 'trie'],
+    keywords=['regular expressions', 'regex', 'pattern', 'trie'],
     license='MIT',
 )
