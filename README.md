@@ -53,13 +53,13 @@ tre.initials()  # Returns: ['g', 'k', 't']
 tre.finals()  # Returns: ['e', 'o', 't']
 ```
 
-The last two methods are intended checking what boundary contexts would be appropriate to set in the final regex. More discussed below.
+The last two methods are intended for checking what boundary contexts are appropriate for the final regex. More discussed below.
 
 ## (No) Boundaries
 
 **trieregex** does not include any default boundaries (such as `r'\b'`) in the pattern returned from its `TrieRegEx.regex()` method, that way the user can determine what is appropriate for each particular use case. 
 
-Consider a fictitious brand name `!Citrus` with an exclamation mark at the beginning, and using `r'\b'` to define its boundaries in an attempt to catch it in a target string:
+Consider a fictitious brand name `!Citrus` with an exclamation mark at the beginning, and trying to catch it in a target string by using `r'\b'` for its boundaries in the regex:
 
 ```py
 string = 'I love !Citrus products!'
@@ -74,7 +74,7 @@ An appropriate regex for catching `'!Citrus'` can be written as follows, where t
 re.findall(r'(?:^|[^\w])(!Citrus)\b', string)  # Returns: ['!Citrus']
 ```
 
-This package is designed to allow any pattern to be added to its trie, not just normal words bound by space and punctuation, so that the user can define their own regex context, and have the option to leave data unnormalized when desired.
+This package is designed to allow any pattern to be added to its trie, not just normal words bound by space and punctuation, so that the user can define their own boundaries in the regex, and have the option to leave the data unnormalized when desired.
 
 ## Python version comptability
 
