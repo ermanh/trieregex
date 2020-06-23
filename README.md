@@ -2,13 +2,18 @@
 
 [**trieregex**](https://github.com/ermanh/trieregex/) composes efficient [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) (regexes) by storing a list of words in a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating the trie into a more compact pattern.
 
-The speed performance of these trie-based regex patterns (e.g. `r'(?:under(?:statement|stand|take|go)?)'`), compared to a straightforward regex union (i.e., `r'(?:understatement|understand|undertake|undergo)'`, becomes evident when using extremely large word lists and _especially_ when more specific or complicated contexts are specified at the boundaries. 
+The speed performance of these trie-based regexes (e.g. `r'(?:under(?:statement|stand|take|go)?)'`), compared to a straightforward regex union (i.e., `r'(?:understatement|understand|undertake|undergo)'`, becomes evident when using extremely large word lists and especially when more specific or complicated contexts are specified at the boundaries. 
 
-This package is implemented with [memoization](https://en.wikipedia.org/wiki/Memoization) to further cut down on processing time.
+This package is also implemented with [memoization](https://en.wikipedia.org/wiki/Memoization) to cut down on its own processing time.
+
+## Installation
+
+
 
 ## Usage
 
 ```py
+import re
 from trieregex import TrieRegEx as TRE
 
 words = ['lemon', 'lime', 'pomelo', 'orange', 'citron']
@@ -32,20 +37,23 @@ tre.has('tangerine')  # Returns: True
 
 # Create regex pattern from the trie
 tre.regex()  # Returns: '(?:tange(?:rine|lo)|grape(?:fruit)?|kumquat)'
+pattern = re.compile(f'\\b{tre.regex()}\\b')  # OR rf'\b{tre.regex()}\b'
+pattern  # Returns: re.compile('\\b(?:tange(?:rine|lo)|grape(?:fruit)?|kumquat)\\b')
+pattern.findall("A kumquat is tastier than a loquat")  # Returns: ['kumquat']
 
 # Inspect initial characters of the words in the trie
 tre.initials()  # Returns: ['g', 'k', 't']
 
 # Inspect final characters of the words in the trie
 tre.finals()  # Returns: ['e', 'o', 't']
-
 ```
+The last two methods may be useful for determining what boundaries to set (or avoid) in the final regex to be used (see below).
 
-### Boundary agnostic
+## Boundary free
 
-**trieregex** does not include any default boundaries (such as `r'\b'`) in the pattern returned from its `TrieRegEx.regex()` method, and leaves it to the user to determine what is appropriate per use case. This ensures the tool stays versatile, rather than force users to normalize everything to fit the tool.
+**trieregex** does not include any default boundaries (such as `r'\b'`) in the pattern returned from its `TrieRegEx.regex()` method, and leaves it to the user to determine what is appropriate per use case. The user retains the choice to keep their data unnormalized.
 
-Consider a fictitious brand name called `!Citrus` with an obligatory exclamation mark at the beginning:
+Consider a fictitious brand name, `!Citrus`, with an exclamation mark at the beginning:
 
 ```py
 import re
@@ -54,12 +62,16 @@ string = 'I love !Citrus products!'
 re.findall(r'\b(!Citrus)\b', string)  # Returns: []
 ```
 
-The `re.findall()` call returns an empty list because the first `r'\b'` is not matched. `r'\b'` stands for the boundary between a word character (all letters and digits plus the underscore) and a non-word character, but the "boundary" between the exclamation mark and its preceding space character is that between two non-word characters, thus resulting in no match.
+The `re.findall()` call returns an empty list because the first `r'\b'` is not matched. `r'\b'` stands for the boundary between a word character and a non-word character, but the "boundary" between the exclamation mark and its preceding space character is that between two non-word characters, thus resulting in no match.
 
-A more desirable regex for the above example might be as follows, where the context before the exclamation mark can be either start-of-string or a non-word character: 
+An appropriate regex for catching `!Citrus` may be as follows, where the context before the exclamation mark can be either start-of-string `r'^'` or a non-word character `r'[^\w]'`: 
 
 ```py
 re.findall(r'(?:^|[^\w])(!Citrus)\b', string)  # Returns: ['!Citrus']
 ```
 
-**trieregex** therefore allows the inclusion of any pattern in its trie, not just natural language words normally bounded by space or punctuation. The regex patterns it produces can similarly be expanded for seaching/matching patterns in any context within the string.
+**trieregex** was designed to allow any pattern in its trie, not just normal words bound by space and punctuation, so that users can define their own regex context.
+
+## Python version comptability
+
+This package is only comptible with Python versions >=3.6 because of the use of [f-strings](https://www.python.org/dev/peps/pep-0498/) and the type hint imports. Those using Python versions <3.6 may consider installing backports (such as [`future-fstrings`](https://pypi.org/project/future-fstrings/)), or changing the few f-strings to `.format()` and removing the `typing` import in your private copy of this package.

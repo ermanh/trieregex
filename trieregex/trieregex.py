@@ -1,21 +1,23 @@
 from collections import defaultdict
 from re import escape
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from .memoizer import Memoizer
 
 
-class TrieRegEx():
+class TrieRegEx:
     __slots__ = ['_trie', '_initials', '_finals']
 
-    def __init__(self, *words: str) -> None:
-        self._trie = {}  # type: Dict[str: dict]
-        self._initials = defaultdict(int)
-        self._finals = defaultdict(int)
+    def __init__(self, *words):
+        # type: (str) -> None
+        self._trie = {}  # type: Dict[str, Any]
+        self._initials = defaultdict(int)  # type: Dict[str, int]
+        self._finals = defaultdict(int)  # type: Dict[str, int]
         self.add(*words)
     
     @Memoizer
-    def add(self, *words: str) -> None:
+    def add(self, *words):
+        # type: (str) -> None
         self.regex.clear_cache()
         for word in words:
             if word != '' and not self.has(word):
@@ -28,7 +30,8 @@ class TrieRegEx():
                     trie = trie[char]
                 trie['**'] = {}
 
-    def remove(self, *words: str) -> None:
+    def remove(self, *words):
+        # type: (str) -> None
         self.add.clear_cache()
         self.regex.clear_cache()
         for word in words:
@@ -56,7 +59,8 @@ class TrieRegEx():
                 else:
                     break
 
-    def has(self, word: str) -> bool:
+    def has(self, word):
+        # type: (str) -> bool
         trie = self._trie
         for char in word:
             if char in trie:
@@ -65,16 +69,19 @@ class TrieRegEx():
                 return False
         return True if ('**' in trie) else False
 
-    def initials(self) -> List[str]:
+    def initials(self):
+        # type: () -> List[str]
         result = [key for key in self._initials if self._initials[key] > 0]
         return sorted(result)
 
-    def finals(self) -> List[str]:
+    def finals(self):
+        # type: () -> List[str]
         result = [key for key in self._finals if self._finals[key] > 0]
         return sorted(result)
 
     @Memoizer
-    def regex(self, trie: dict = None, reset: bool = True) -> str:
+    def regex(self, trie={}, reset=True):
+        # type: (Dict[str, Any], bool) -> str
         if reset:
             trie = self._trie
 
