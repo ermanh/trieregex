@@ -2,7 +2,7 @@
 
 [**trieregex**](https://github.com/ermanh/trieregex/) create efficient [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) (regexes) by storing a list of words in a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating the trie into a more compact pattern.
 
-The speed performance of these trie-based regexes (e.g. `r'(?:under(?:statement|stand|take|go)?)'`), compared to a straightforward regex union (i.e., `r'(?:understatement|understand|undertake|undergo)'`, becomes evident when using extremely large word lists and especially when more specific or complicated contexts are specified at the boundaries. 
+The speed performance of these trie-based regexes (e.g. `r'(?:under(?:stand|take|go)?)'`), compared to a straightforward regex union (i.e., `r'(?:understand|undertake|undergo)'`, becomes evident when using extremely large word lists and especially when more specific or complicated contexts are specified at the boundaries. 
 
 This package is also implemented with [memoization](https://en.wikipedia.org/wiki/Memoization) to cut down on its own processing time.
 
@@ -10,12 +10,6 @@ This package is also implemented with [memoization](https://en.wikipedia.org/wik
 
 ```shell
 pip install trieregex
-```
-
-Alternatively from the github repository:
-
-```shell
-pip install git+https://github.com/ermanh/trieregex.git#egg=trieregex
 ```
 
 ## Usage

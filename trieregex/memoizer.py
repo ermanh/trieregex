@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Type
 
 class Memoizer:
     """Decorator class for increasing the processing speed of a function using 
-    memoization
+    memoization with cache-clearing capability
     """
     __slots__ = ['func', 'cache']
 
@@ -23,6 +23,8 @@ class Memoizer:
     def __get__(self, instance, owner):
         # type: (object, Type) -> Callable
         fn = partial(self.__call__, instance)
+        fn.__name__ = f'[Memoizer-decorated function] {self.func.__name__}'
+        fn.__doc__ = f'[Memoizer-decorated function] {self.func.__doc__}'
         fn.clear_cache = self._clear_cache
         return fn
 

@@ -12,7 +12,7 @@ class TrieRegEx:
     (1) adding and removing words from a trie, 
     (2) checking whether a word exists in the trie, 
     (3) inspecting initial and final characters in the trie, and
-    (4) creating a regular expression pattern from the trie.
+    (4) creating a boundary-less regular expression pattern from the trie.
     """
     __slots__ = ['_trie', '_initials', '_finals']
 
@@ -28,6 +28,7 @@ class TrieRegEx:
         # type: (str) -> None
         """Add a word or words to the trie"""
         self.regex.clear_cache()
+        
         for word in words:
             if word != '' and not self.has(word):
                 self._initials[word[0]] += 1
@@ -44,6 +45,7 @@ class TrieRegEx:
         """Remove a word or words from the trie"""
         self.add.clear_cache()
         self.regex.clear_cache()
+
         for word in words:
             remove_word = False
             for i in range(len(word), 0, -1):
@@ -95,7 +97,7 @@ class TrieRegEx:
     @Memoizer
     def regex(self, trie={}, reset=True):
         # type: (Dict[str, Any], bool) -> str
-        """Returns an escaped regex string"""
+        """Returns a boundary-less escaped regex string based on the trie"""
         if reset:
             trie = self._trie
 
