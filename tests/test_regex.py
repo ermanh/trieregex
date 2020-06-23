@@ -109,7 +109,3 @@ class TestRegex(unittest.TestCase):
             self.tre.regex(),
             '(?:p(?:e(?:ar?)?)?|ri(?:ver|ch))'
         )
-
-
-if __name__ == '__main__':
-    unittest.main()

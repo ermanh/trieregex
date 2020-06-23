@@ -18,6 +18,10 @@ setup(
     url='https://github.com/ermanh/trieregex',
     packages=find_packages(exclude='tests'),
     python_requires='>=3.6',
+    install_requires=[],
+    extras_require={
+        'testing': ['pytest']
+    },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

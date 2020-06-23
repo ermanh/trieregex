@@ -85,7 +85,3 @@ class TestTrieRegEx(unittest.TestCase):
             self.tre.regex(),
             "(?:hea(?:lthy|rt)|l(?:ark|ook)|pea(?:ch|r)|change)"
         )
-
-
-if __name__ == '__main__':
-    unittest.main()

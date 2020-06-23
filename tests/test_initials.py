@@ -107,7 +107,3 @@ class TestInitials(unittest.TestCase):
             {'a': 0, 't': 0, 's': 0, 'w': 0, 'f': 0, 'n': 0, 'b': 0, 'e': 0},
             "All keys should be set to a value of 0"
         )
-
-
-if __name__ == '__main__':
-    unittest.main()

@@ -1,7 +1,5 @@
 # trieregex
 
-[![build](https://img.shields.io/github/workflow/status/ermanh/trieregex/GH/master?logo=github&cacheSeconds=86400)](https://github.com/ermanh/trieregex/actions?query=branch%3Amaster)
-[![codecov](https://img.shields.io/codecov/c/github/ermanh/trieregex/master?logo=codecov&logoColor=white)](https://codecov.io/gh/ermanh/trieregex)
 [![pypi Version](https://img.shields.io/pypi/v/trieregex.svg?logo=pypi&logoColor=white)](https://pypi.org/project/trieregex/)
 [![python](https://img.shields.io/pypi/pyversions/trieregex.svg?logo=python&logoColor=white)](https://pypi.org/project/trieregex/)
 

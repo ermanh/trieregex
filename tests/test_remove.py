@@ -146,7 +146,3 @@ class TestRemove(unittest.TestCase):
             TRE(*self.incrementals)._trie,
             "Trie should remain the same (soft check)"
         )
-
-
-if __name__ == '__main__':
-    unittest.main()
