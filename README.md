@@ -5,7 +5,7 @@
 
 [**trieregex**](https://github.com/ermanh/trieregex/) creates efficient regular expressions (regexes) by storing a list of words in a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating the trie into a more compact pattern.
 
-The speed performance of a trie-based regex (e.g. `r'(?:under(?:sta(?:nd|te))|take|go)?)'`), compared to a flat regex union (i.e., `r'(?:understand|understate|undertake|undergo)'`, becomes obvious when using extremely large word lists, and especially when more specific or complicated contexts are specified at the boundaries. The processing time of using this package itself is also minimized with memoization.
+The speed performance of a trie-based regex (e.g. `r'(?:under(?:sta(?:nd|te))|take|go)?)'`) -- compared to a flat regex union (i.e., `r'(?:understand|understate|undertake|undergo)'`) -- becomes obvious when using extremely large word lists, and especially when more specific or complicated contexts are specified at the boundaries. The processing time of using this package itself is also minimized with [memoization](https://en.wikipedia.org/wiki/Memoization).
 
 ## Installation
 
@@ -53,13 +53,13 @@ tre.initials()  # Returns: ['g', 'k', 't']
 tre.finals()  # Returns: ['e', 'o', 't']
 ```
 
-The last two methods are intended for the user to check what boundary contexts may be appropriate to set in the final regex. More discussed below.
+The last two methods are intended checking what boundary contexts would be appropriate to set in the final regex. More discussed below.
 
 ## (No) Boundaries
 
-**trieregex** does not include any default boundaries (such as `r'\b'`) in the pattern returned from its `TrieRegEx.regex()` method, so that the user can determine what is appropriate for their particular use case. 
+**trieregex** does not include any default boundaries (such as `r'\b'`) in the pattern returned from its `TrieRegEx.regex()` method, that way the user can determine what is appropriate for each particular use case. 
 
-Consider a fictitious brand name `!Citrus` with an exclamation mark at the beginning, using `r'\b'` to define its boundaries in an attempt to catch it:
+Consider a fictitious brand name `!Citrus` with an exclamation mark at the beginning, and using `r'\b'` to define its boundaries in an attempt to catch it in a target string:
 
 ```py
 string = 'I love !Citrus products!'
@@ -74,7 +74,7 @@ An appropriate regex for catching `'!Citrus'` can be written as follows, where t
 re.findall(r'(?:^|[^\w])(!Citrus)\b', string)  # Returns: ['!Citrus']
 ```
 
-This package was designed to allow any pattern in its trie, not just normal words bound by space and punctuation, so that the user can define their own regex context, and have the option to avoid data normalization when it is undesirable.
+This package is designed to allow any pattern to be added to its trie, not just normal words bound by space and punctuation, so that the user can define their own regex context, and have the option to leave data unnormalized when desired.
 
 ## Python version comptability
 
