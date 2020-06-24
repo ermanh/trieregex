@@ -5,7 +5,7 @@
 
 [**trieregex**](https://github.com/ermanh/trieregex/) creates efficient regular expressions (regexes) by storing a list of words in a [trie](https://en.wikipedia.org/wiki/Trie) structure, and translating the trie into a more compact pattern.
 
-The speed performance of a trie-based regex (e.g., `r'(?:under(?:sta(?:nd|te)|take|go))'`) -- compared to a flat regex union (i.e., `r'(?:understand|understate|undertake|undergo)'`) -- becomes apparent when using extremely large word lists, and especially when more specific or complicated contexts are specified at the boundaries. The processing time of this package itself is also minimized with [memoization](https://en.wikipedia.org/wiki/Memoization).
+The speed performance of a trie-based regex (e.g., `r'under(?:sta(?:nd|te)|take|go)'`) -- compared to a flat regex union (i.e., `r'(?:understand|understate|undertake|undergo)'`) -- becomes apparent when using extremely large word lists, and especially when more specific or complicated contexts are specified at the boundaries. The processing time of this package itself is also minimized with [memoization](https://en.wikipedia.org/wiki/Memoization).
 
 ## Installation
 
