@@ -1,3 +1,3 @@
-__version__ = "1.0.0"
+from .version import version as __version__
 
 from .trieregex import TrieRegEx
