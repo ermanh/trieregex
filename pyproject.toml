@@ -1,0 +1,39 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.2", "setuptools_scm[toml]>=3.4.3", "wheel"]
+
+[project]
+name = "trieregex"
+description = "Build trie-based regular expressions from large word lists"
+readme = "README.md"
+keywords = ["pattern", "regex", "regular expressions", "trie"]
+license = {text = "MIT"}
+authors = [{name = "Herman Leung", email = "leung.hm@gmail.com"}]
+requires-python = ">=3.6"
+dependencies = []
+dynamic = ["version"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+]
+urls = {Homepage = "https://github.com/ermanh/trieregex"}
+
+[project.optional-dependencies]
+testing = ["pytest"]
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+exclude = ["tests"]
+namespaces = false
+
+[tool.setuptools_scm]
+write_to = "trieregex/version.py"
