@@ -75,9 +75,3 @@ re.findall(r'(?:^|[^\w])(!Citrus)\b', string)  # Returns: ['!Citrus']
 ```
 
 This package is designed to allow any pattern to be added to its trie, not just normal words bound by space and punctuation, so that the user can define their own boundaries in the regex, and have the option to leave the data unnormalized when desired.
-
-## Python version comptability
-
-Due to [f-strings](https://www.python.org/dev/peps/pep-0498/) and type hints, this package is only compatible with Python versions >=3.6. 
-
-For Python versions >=2.7, <3.6, backports such as [`future-fstrings`](https://pypi.org/project/future-fstrings/) and [`typing`](https://pypi.org/project/typing/) are available.

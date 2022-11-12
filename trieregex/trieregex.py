@@ -1,8 +1,8 @@
 from collections import defaultdict
 from re import escape
-from typing import Any, Dict, List
+from typing import Any, DefaultDict, Dict, List, Optional
 
-from .memoizer import Memoizer
+from .memoizer import memoizer
 
 
 class TrieRegEx:
@@ -16,16 +16,14 @@ class TrieRegEx:
     """
     __slots__ = ['_trie', '_initials', '_finals']
 
-    def __init__(self, *words):
-        # type: (str) -> None
-        self._trie = {}  # type: Dict[str, Any]
-        self._initials = defaultdict(int)  # type: Dict[str, int]
-        self._finals = defaultdict(int)  # type: Dict[str, int]
+    def __init__(self, *words: str) -> None:
+        self._trie: Dict[str, Any] = {}
+        self._initials: DefaultDict[str, int] = defaultdict(int)
+        self._finals: DefaultDict[str, int] = defaultdict(int)
         self.add(*words)
     
-    @Memoizer
-    def add(self, *words):
-        # type: (str) -> None
+    @memoizer()
+    def add(self, *words: str) -> None:
         """Add a word or words to the trie"""
         self.regex.clear_cache()
         
@@ -40,8 +38,7 @@ class TrieRegEx:
                     trie = trie[char]
                 trie['**'] = {}
 
-    def remove(self, *words):
-        # type: (str) -> None
+    def remove(self, *words: str) -> None:
         """Remove a word or words from the trie"""
         self.add.clear_cache()
         self.regex.clear_cache()
@@ -71,8 +68,7 @@ class TrieRegEx:
                 else:
                     break
 
-    def has(self, word):
-        # type: (str) -> bool
+    def has(self, word: str) -> bool:
         """Check if a word exists in the trie"""
         trie = self._trie
         for char in word:
@@ -80,24 +76,24 @@ class TrieRegEx:
                 trie = trie[char]
             else:
                 return False
-        return True if ('**' in trie) else False
+        return '**' in trie
 
-    def initials(self):
-        # type: () -> List[str]
+    def initials(self) -> List[str]:
         """Returns a list of unique initial characters in the trie"""
         result = [key for key in self._initials if self._initials[key] > 0]
         return sorted(result)
 
-    def finals(self):
-        # type: () -> List[str]
+    def finals(self) -> List[str]:
         """Returns a list of unique final characters in the trie"""
         result = [key for key in self._finals if self._finals[key] > 0]
         return sorted(result)
 
-    @Memoizer
-    def regex(self, trie={}, reset=True):
-        # type: (Dict[str, Any], bool) -> str
+    @memoizer()
+    def regex(self, trie: Optional[Dict[str, Any]] = None, reset: bool = True) -> str:
         """Returns a boundary-less escaped regex string based on the trie"""
+        if trie is None:
+            trie = {}
+
         if reset:
             trie = self._trie
 
@@ -117,7 +113,7 @@ class TrieRegEx:
 
             if len(sequences) == 1:
                 result = sequences[0]
-                if len(sequences[0]) > 1:
+                if len(result) > 1:
                     result = f'(?:{result})'
             elif len(sequences) == len("".join(sequences)):
                 result = f'[{"".join(sequences)}]'
