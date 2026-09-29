@@ -1,8 +1,11 @@
 from collections import defaultdict
+from itertools import count
 from re import escape
 from typing import Any, Dict, List
 
 from .memoizer import Memoizer
+
+_UID = count()
 
 
 class TrieRegEx:
@@ -14,10 +17,11 @@ class TrieRegEx:
     (3) inspecting initial and final characters in the trie, and
     (4) creating a boundary-less regular expression pattern from the trie.
     """
-    __slots__ = ['_trie', '_initials', '_finals']
+    __slots__ = ['_trie', '_initials', '_finals', '_uid']
 
     def __init__(self, *words):
         # type: (str) -> None
+        self._uid = next(_UID)  # stable memo key (heap addresses are reused)
         self._trie = {}  # type: Dict[str, Any]
         self._initials = defaultdict(int)  # type: Dict[str, int]
         self._finals = defaultdict(int)  # type: Dict[str, int]
